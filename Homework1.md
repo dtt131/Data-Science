@@ -1,7 +1,7 @@
 cd documents/dat8/data
 
 1)
-tail chipotle.tsv  
+head chipotle.tsv  
 tail chipotle.tsv  
 
 each row represents an order of chipotle. the first column is the order ID, the second column is quantity, the third column 
