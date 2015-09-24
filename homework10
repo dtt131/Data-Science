@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Sep 24 14:46:32 2015
+
+@author: Duc
+"""
+
+import pandas as pd
+yelp = pd.read_csv('yelp.csv')
+
+# i want to look at the 5-number summary of stars just to get a sense of the distribution
+yelp.stars.describe()
+
+#Task 2: let's obserive the correlation between the dependent and independent variables.
+yelp.corr()
+
+# there seems to be a negative correlation between the number of stars and reviews that are useful or funny
+# while reviews that are cool have a positive correlation with the number of stars
+# the correlation between the independent variables indicate there could be some multicollineraity issues
+
+#task 3, going to define the feature and response columns 
+
+feature = ['cool', 'useful', 'funny']
+X = yelp[feature]
+y = yelp.stars
+
+# task 4 need to instantiate and then run the model
+from sklearn.linear_model import LinearRegression
+linreg = LinearRegression()
+linreg.fit(X, y)
+
+print linreg.intercept_
+print linreg.coef_
+
+#it looks like there is a positive relationship between "cool" stars 
+#and a negative one between stars and useful/funny reviews
+# this sort of makes intiuitive sense, as people who write funny and/or useful (long?) reviews tend
+# could have more critical things to say
+
+#task 5 now we want to create a train/test sets and compute the RMSE
+
+from sklearn.cross_validation import train_test_split
+
+def train_test_rmse(feature):
+    X = yelp[feature]
+    y = yelp.stars
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
+    linreg = LinearRegression()
+    linreg.fit(X_train, y_train)
+    y_pred = linreg.predict(X_test)
+    return np.sqrt(metrics.mean_squared_error(y_test, y_pred))
+
+train_test_rmse(feature)
+
+#the RSME is the average distance of the data point to the fitted regression line, in units
+#that is the same as y
+
+#task 6, removing different features
+print train_test_rmse(['cool', 'useful'])
+print train_test_rmse(['funny', 'useful'])
+print train_test_rmse(['cool', 'funny'])
+
+#it looks like the RMSE is smallest when you include all the features, which means that a model with more features
+#in it will create less error
